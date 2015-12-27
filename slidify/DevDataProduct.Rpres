@@ -1,0 +1,52 @@
+Devoping Data Product
+========================================================
+author: Wong Thai Min
+date: 27th Dec 2015
+
+Project Details
+========================================================
+A simple Shiny application has been developed to to analyse the impact of train/test data sets slicing and the number of decision trees parameters on the prediction accuracy of Random Forest algorithm.
+
+In this applicatio, the user can manipulate the parameters with sliders and see the outcome differences at the output panel.
+
+The application can be viewed at:
+- Shiny server URL: http://tmwong.shinyapps.io/assignment
+- GitHub repo URL: https://github.com/thaimin/DevelopDataProducts
+
+About the dataset
+========================================================
+- The data used in this application is taken from the famous Edgar Anderson's Iris Data.
+- Iris is a data frame with 150 cases (rows) and 5 variables (columns) named Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, and Species.
+```{r}
+data(iris)
+summary(iris)
+```
+
+How it works
+========================================================
+- A Random Forest prediction model is used in this application.
+- The train/test data sets partition ratio and the number of decision trees can be manipulated by the user.
+- When user change the value of the parameters, the prediction accuracy will be calculated and the plot will be updated as well.
+
+
+
+Sample Plot
+========================================================
+Sample plot of Prediction Accuracy:
+
+```{r, echo=FALSE}
+library(shiny)
+library(ggplot2)
+library(caret)
+library(randomForest)
+data(iris)
+
+inTrain <- createDataPartition(y=iris$Species, p=0.6, list=FALSE)
+training <- iris[inTrain,]
+testing <- iris[-inTrain,]
+  
+modFit <- randomForest(Species ~ ., data = training, ntree = 200)
+pred <- predict(modFit, testing)
+testing$predRight <- pred==testing$Species
+qplot(Petal.Width, Petal.Length, colour=predRight, data=testing, main="Predictions Accuracy")
+```
